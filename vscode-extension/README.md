@@ -2,6 +2,10 @@
 
 TGS is a schema definition language that acts as a middleman between different programming languages, allowing you to generate code and share types across them. This document describes its syntax and grammar rules.
 
+[Typegen official repository](https://github.com/cakeruu/typegen)
+
+[Typegen extension](https://github.com/cakeruu/typegen-editor-plugins)
+
 ## Basic Structure
 
 A TGS file consists of four main parts:

@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/cakeruu/typegen-editor-plugins"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "cakeruu",
   "engines": {
     "vscode": "^1.93.1"
@@ -47,6 +47,11 @@
       {
         "command": "typegen.showOutput",
         "title": "Show Output",
+        "category": "Typegen"
+      },
+      {
+        "command": "typegen.restartDaemon",
+        "title": "Restart Daemon",
         "category": "Typegen"
       }
     ]

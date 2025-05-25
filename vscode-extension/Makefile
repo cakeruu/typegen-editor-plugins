@@ -2,7 +2,7 @@ default: install compile vsix-package
 
 install:
 	npm install
-vsix-package:
-	npm run vsix-package
+pack:
+	npm run package-vsix
 compile:
 	npm run compile

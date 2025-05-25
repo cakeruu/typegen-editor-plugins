@@ -140,8 +140,6 @@ export class TgsParser implements vscode.Disposable {
                 this.daemonProcess.stderr.setEncoding('utf8');
                 this.daemonProcess.stderr.on('data', (data) => {
                     const errorText = data.toString().trim();
-                    this.outputChannel.appendLine(`[Typegen Daemon ERR]: ${errorText}`);
-                    // Don't treat all stderr as fatal - some programs output info to stderr
                 });
             }
 
@@ -149,7 +147,7 @@ export class TgsParser implements vscode.Disposable {
             if (this.daemonProcess.stdout) {
                 this.daemonProcess.stdout.setEncoding('utf8');
                 this.daemonProcess.stdout.on('data', (data: string) => {
-                    this.outputChannel.appendLine(`[Typegen Daemon OUT]: ${data.trim()}`);
+                    // Remove verbose logging of raw daemon output
                     this.stdoutBuffer += data;
                     // Use setImmediate to avoid blocking the event loop
                     if (!this.isProcessingBuffer) {
@@ -180,7 +178,7 @@ export class TgsParser implements vscode.Disposable {
                 
                 try {
                     const result = JSON.parse(line);
-                    this.outputChannel.appendLine(`[Parsed JSON]: ${JSON.stringify(result)}`);
+                    // Remove verbose JSON logging
                     
                     if (result.status === 'ready') {
                         this.isDaemonReady = true;
@@ -205,8 +203,8 @@ export class TgsParser implements vscode.Disposable {
                         request.resolve(result as ParseResult);
                     }
                 } catch (parseError) {
-                    this.outputChannel.appendLine(`[Parse Error]: Failed to parse JSON: ${line}`);
-                    // Skip malformed JSON lines
+                    // Only log actual parse errors, not raw data
+                    this.outputChannel.appendLine(`Error parsing daemon response: ${parseError}`);
                     continue;
                 }
             }
@@ -367,7 +365,7 @@ export class TgsDiagnosticProvider {
     private readonly DEBOUNCE_TIME = 150; // Increased debounce for better performance
     private pendingValidations = new Set<string>();
     private lastValidationTime = new Map<string, number>();
-    private readonly MIN_VALIDATION_INTERVAL = 100; // Minimum time between validations
+    private readonly MIN_VALIDATION_INTERVAL = 10; // Minimum time between validations
     
     constructor(context: vscode.ExtensionContext, outputChannel: vscode.OutputChannel, parser: TgsParser) {
         this.parser = parser;
@@ -760,7 +758,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     try {
         await parser.initialize();
-        typegenOutputChannel.appendLine('✅ Typegen daemon connected and extension activated.');
+        typegenOutputChannel.appendLine('✅ Typegen extension activated');
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         typegenOutputChannel.appendLine(`❌ Failed to connect to Typegen daemon: ${errorMessage}`);
