@@ -1,0 +1,24 @@
+{
+    "Create Schema": {
+        "prefix": [
+            "cs",
+            "create schema"
+        ],
+        "body": "create schema $0();",
+        "description": "Create a new schema"
+    },
+    "Root Path": {
+        "prefix": [
+            "rootPath"
+        ],
+        "body": "rootPath = $0;",
+        "description": "The root path of the project"
+    },
+    "Import Schema": {
+        "prefix": [
+            "importSchema"
+        ],
+        "body": "import { $0 } from $1;",
+        "description": "Import a schema from a file"
+    }
+}

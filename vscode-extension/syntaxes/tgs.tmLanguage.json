@@ -1,0 +1,71 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "TGS",
+	"scopeName": "source.tgs",
+	"patterns": [
+		{
+			"match": "//.*$",
+			"name": "comment.line.double-slash.tgs"
+		},
+		{
+			"begin": "/\\*",
+			"end": "\\*/",
+			"name": "comment.block.tgs"
+		},
+		{
+			"match": "\\b(create)\\s+(schema)\\b",
+			"captures": {
+				"1": {
+					"name": "keyword.control.tgs"
+				},
+				"2": {
+					"name": "keyword.control.tgs"
+				}
+			}
+		},
+		{
+			"match": "\\b(Uid,int|uint|long|ulong|short|ushort|byte|sbyte|float|double|decimal|bool|char|object|string|Array|List|Map|Set|Queue|Date|DateTime)\\b",
+			"name": "keyword.control.tgs"
+		},
+		{
+			"match": "([A-Za-z_][A-Za-z0-9_]*)\\s*:",
+			"captures": {
+				"1": {
+					"name": "support.type.property-name"
+				}
+			}
+		},
+		{
+			"match": "(/[^\\s;]+)",
+			"name": "string.regexp.tgs"
+		},
+		{
+			"match": "<([^>]+)>",
+			"captures": {
+				"1": {
+					"name": "string.regexp.tgs"
+				}
+			}
+		},
+		{
+			"match": "([A-Za-z_][A-Za-z0-9_]*)(?=\\s*=)",
+			"name": "entity.name.function"
+		},
+		{
+			"match": "([A-Za-z_][A-Za-z0-9_]*)(?=\\s*\\+|\\s*=\\s)",
+			"name": "entity.name.function"
+		},
+		{
+			"match": "([A-Za-z_][A-Za-z0-9_]*)(?=\\s*[<(])",
+			"name": "entity.name.class"
+		},
+		{
+			"match": ";",
+			"name": "punctuation.terminator"
+		},
+		{
+			"match": "[(){}]",
+			"name": "punctuation.definition.block"
+		}
+	]
+}
