@@ -1,4 +1,6 @@
-default: install compile vsix-package
+default: install compile pack
+
+build: compile pack
 
 install:
 	npm install

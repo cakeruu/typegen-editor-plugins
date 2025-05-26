@@ -1,250 +1,222 @@
-# TGS (Typegen Schema) Grammar
+<div align="center">
+  <img src="./assets/banner.webp" alt="Typegen Banner" width="100%" />
 
-TGS is a schema definition language that acts as a middleman between different programming languages, allowing you to generate code and share types across them. This document describes its syntax and grammar rules.
+  <h1>Typegen</h1>
+  <p>A powerful type generation tool that acts as a bridge between different programming languages.</p>
 
-[Typegen official repository](https://github.com/cakeruu/typegen)
+  <div>
+    <a href="https://github.com/cakeruu/typegen/blob/main/LICENSE.md">
+      <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License">
+    </a>
+    <a href="https://www.npmjs.com/package/@cakeru/typegen">
+      <img src="https://img.shields.io/npm/v/@cakeru/typegen?color=green" alt="npm version">
+    </a>
+  </div>
+</div>
 
-[Typegen extension](https://github.com/cakeruu/typegen-editor-plugins)
+## Overview
 
-## Basic Structure
+Typegen allows you to define your types once using a simple schema definition language (TGS) and generate them for multiple target languages. Write your schemas in `.tgs` files and let Typegen handle the rest.
 
-A TGS file consists of four main parts:
-1. Import Declarations (optional)
-2. Directory Declarations  
-3. Schema Declarations
-4. Enum Declarations
+## Currently Supported Languages
+- TypeScript
+- C#
 
-## Comments
+## Supported Platforms
+- Windows
+- macOS
+- Linux
 
-```ts
-// Single line comment
+**Note on macOS and Linux platforms:** I do not personally own macOS or Linux systems. Therefore, while `make` targets are provided for these platforms, I rely on the community for testing and validation. Please report any issues you encounter.
 
-/* Multi-line
-   comment */
+## Key Features
+
+- **Schema Definitions**: Define complex data structures with inheritance support
+- **Enum Support**: Create type-safe enumerations that translate across languages  
+- **Import System**: Share types across multiple schema files with a clean import syntax
+- **Path Variables**: Organize your generated code with flexible directory structures
+- **Generic Types**: Support for arrays, lists, maps, and other generic collections
+- **CLI Integration**: Simple commands for project initialization and code generation
+- **IDE Support**: VS Code extension with syntax highlighting and validation
+
+## Installation
+
+### CLI Tool
+```bash
+npm install -g @cakeru/typegen
 ```
 
-## Import Declarations
+### VS Code Extension For .tgs File Support
+1. Open VS Code
+2. Go to Extensions
+3. Search for "Typegen"
+4. Click Install
 
-Import declarations allow you to reference schemas and enums from other TGS files.
+The extension provides:
+- Syntax highlighting
+- IntelliSense
+- Error detection
+- Auto-completion
+- Schema/Enum validation
 
-### Syntax
-```ts
-import { SchemaName1, SchemaName2, EnumName } from "./other-file.tgs";
+**Note:** The extension is currently in development and may be noticeably slow in operation. Performance improvements are planned for future updates.
+
+<small><i>You can also compile the extension yourself from the source code in the <a href="https://github.com/cakeruu/typegen-editor-plugins">Typegen editor plugins repository</a>.</i></small>
+
+## Getting Started
+
+### Create a New Project
+```bash
+typegen create-project my-shared-types
+```
+This will:
+1. Create a new directory `my-shared-types`
+2. Initialize a `typegen.config.json` file
+3. Create a `.typegen` directory (added to .gitignore)
+
+Or initialize in an existing project <strong><i>(not recommended)</i></strong>:
+```bash
+typegen init
 ```
 
-### Rules
-- Must be at the top of the file (before any other declarations)
-- Import path must be a string literal
-- Must end with semicolon
-- Can import multiple items separated by commas
-- Import names must match exactly with exported schemas/enums
-- Imported items can be used in schemas as types or inheritance targets
-- Circular imports are not allowed
+### Configuration
 
-### Examples
-```ts
-import { User, Customer } from "./users.tgs";
-import { OrderStatus } from "./enums.tgs";
+The `typegen.config.json` file defines where your types will be generated:
 
-// Now you can use User, Customer, and OrderStatus in this file
-create schema Order(
-    Customer: Customer;
-    User: User;
-    Status: OrderStatus;
-);
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/cakeruu/typegen/main/json-schema/typegen-config-schema.json",
+  "build_out": [
+    {
+      "lang": "c#",
+      "output_path": "./backend/Types"
+    },
+    {
+      "lang": "typescript",
+      "output_path": "./frontend/src/types"
+    }
+  ]
+}
 ```
 
-## Directory Declarations
+<small><i>The config file has built-in autocompletion through JSON schema.</i></small>
 
-Directory declarations define paths that will be used for schema and enum output locations.
+### Create Schema Files
 
-### Syntax
-```ts
-variableName = /absolute/path;
-variableName = existingVariable + /relative/path;
-```
+Create `.tgs` files in your project to define your types. Typegen supports schemas, enums, and imports:
 
-### Rules
-- Must end with semicolon
-- Path must start with /
-- Can reference previously declared variables using +
-- Cannot reference variables declared after the current line
-- Cannot reference undefined variables
-- Cannot be empty (e.g., `dir = ;`)
-- `rootPath` is a special variable that cannot be used in schema declarations
-
-## Schema Declarations
-
-Schemas define the structure of types that will be generated.
-
-### Basic Syntax
-```ts
-create schema SchemaName<outputDir>(
-    property1: Type;
-    property2: Type?;  // Optional property
-);
-```
-
-### Inheritance
-```ts
-create schema DerivedSchema<outputDir> & BaseSchema(
-    // Additional properties...
-);
-```
-
-### Rules
-- Schema names must be unique within the file and across imported schemas
-- Cannot inherit from itself
-- Can inherit from schemas defined in the same file or imported schemas
-- Properties must end with semicolon [ ; ]
-- Last property must also have a semicolon
-- Output directory is optional
-- Output directory must be a defined directory variable (except rootPath)
-- Empty schemas are allowed but will show a warning
-- Can use imported enums as property types
-
-### Example
+#### Basic Schema Example
 ```ts
 rootPath = /Users;
-// Directory declarations
 responsesDir = /Responses;
 requestsDir = /Requests;
 
-// Output directory not specified, will default to rootPath
-create schema BaseEntity(
+create schema User<responsesDir>(
     Id: Uid;
-    CreatedAt: DateTime;
-    UpdatedAt: DateTime;
-);
-
-create schema UserResponse<responsesDir> & BaseEntity(
     Name: string;
     Email: string?;
 );
 
-create schema CreateUserRequest<requestsDir>(
+create schema UserRequest<requestsDir>(
     Name: string;
     Email: string;
 );
 ```
 
-## Enum Declarations
-
-Enums define a set of named constants that will be generated as union types or enums in target languages.
-
-### Syntax
-```ts
-create enum EnumName<outputDir>(
-    Value1,
-    Value2,
-    Value3
-);
-```
-
-### Rules
-- Enum names must be unique within the file and across imported enums
-- Values must be valid identifiers
-- Values are separated by commas
-- Trailing comma after last value is optional
-- Empty enums are not allowed
-- Output directory is optional
-- Output directory must be a defined directory variable (except rootPath)
-- Enum values cannot contain spaces or special characters
-
-### Example
+#### Enums Example
 ```ts
 enumsDir = /Enums;
 
-create enum CustomerStatus<enumsDir>(
+create enum UserStatus<enumsDir>(
     Active,
     Inactive,
     Pending,
     Suspended
 );
 
-create enum OrderType(
-    Standard,
-    Express,
-    Overnight
+create schema User(
+    Id: Uid;
+    Name: string;
+    Status: UserStatus;  // Using the enum as a type
 );
 ```
 
-## Types
-
-### Built-in Types
-- `Uid`
-- Numeric: `int`, `uint`, `long`, `ulong`, `short`, `ushort`, `byte`, `sbyte`, `float`, `double`, `decimal`
-- `bool`
-- `char`
-- `object`
-- `string`
-- `Date`
-- `DateTime`
-
-### Generic Types
-- `Array<T>`
-- `List<T>`
-- `Map<K, V>`
-- `Set<T>`
-- `Queue<T>`
-
-### Custom Types
-- Any schema defined in the current file
-- Any enum defined in the current file
-- Any imported schema or enum
-
-### Type Rules
-- Can use any built-in type
-- Can use any previously defined schema as a type
-- Can use any defined enum as a type
-- Can use imported schemas and enums as types
-- Can nest generic types (e.g., `Map<string, List<User>>`)
-- Can make any type optional by adding ? suffix
-- Generic types must have correct number of type parameters
-  - `Map` requires exactly two
-  - Others require exactly one
-
-## Property Rules
-- Must have format: `name: type;`
-- Name must be a valid identifier
-- Type must be a valid type (built-in, schema, enum, or generic)
-- Must end with semicolon
-- Can be marked optional with ? after the type
-
-## Complete Example
+#### Imports Example
 ```ts
-// Import external dependencies
+// users.tgs
+import { OrderStatus } from "./orders.tgs";
 import { BaseEntity } from "./common.tgs";
-import { UserRole, AccountStatus } from "./enums.tgs";
 
-// Directory setup
-rootPath = /Users;
-responsesDir = /Responses;
-requestsDir = /Requests;
-enumsDir = /Enums;
-
-// Define local enums
-create enum UserPreference<enumsDir>(
-    EmailNotifications,
-    SmsNotifications,
-    PushNotifications
-);
-
-// Define schemas with inheritance and enum usage
-create schema UserResponse<responsesDir> & BaseEntity(
-    Name: string;
-    Email: string?;
-    Role: UserRole;  // From imported enum
-    Status: AccountStatus;  // From imported enum
-    Preferences: List<UserPreference>;  // Local enum
-    Friends: List<UserResponse>;  // Self-reference
-    Settings: Map<string, string>;
-);
-
-create schema CreateUserRequest<requestsDir>(
+create schema User & BaseEntity(
     Name: string;
     Email: string;
-    Role: UserRole;
-    InitialPreferences: List<UserPreference>?;
+    LastOrderStatus: OrderStatus?;  // Using imported enum
 );
 ```
+
+#### Advanced Features
+```ts
+// Import from other files
+import { BaseEntity, Address } from "./common.tgs";
+import { OrderStatus, PaymentMethod } from "./enums.tgs";
+
+// Directory variables with concatenation
+rootPath = /Commerce;
+responseDir = rootPath + /Responses;
+enumsDir = rootPath + /Enums;
+
+// Local enums
+create enum CustomerType<enumsDir>(
+    Individual,
+    Business,
+    Enterprise
+);
+
+// Schema with inheritance and complex types
+create schema Customer<responseDir> & BaseEntity(
+    Name: string;
+    Email: string;
+    Type: CustomerType;
+    Addresses: List<Address>;  // Imported schema
+    OrderHistory: Map<string, OrderStatus>;  // Imported enum
+    Preferences: Map<string, Array<PaymentMethod>>;  // Nested generics
+);
+```
+
+<small><i>See [GRAMMAR.md](./GRAMMAR.md) for detailed TGS language documentation.</i></small> 
+
+### Generate Code
+```bash
+typegen build
+```
+This will generate the corresponding types in all configured languages and output directories.
+
+## CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| <sub>`build`</sub> | <sub>Generate code for all schemas and enums in the current directory. Use the `--help` flag to display the available options</sub> |
+| <sub>`parse`</sub> | <sub>Parse a .tgs file and outputs errors/success status. Use the `--help` flag to display the available options</sub> |
+| <sub>`init`</sub> | <sub>Initialize Typegen in current directory</sub> |
+| <sub>`create-project [name]`</sub> | <sub>Create a new Typegen project</sub> |
+| <sub>`--help` or `-h`</sub> | <sub>Display available commands and usage</sub> |
+
+
+## Project Structure
+```
+my-shared-types/
+├── typegen.config.json
+├── .typegen/                 # Build cache (gitignored)
+├── common.tgs               # Shared base types
+├── users.tgs                # User-related schemas
+├── orders.tgs               # Order-related schemas and enums
+└── enums.tgs                # Global enumerations
+```
+
+## Contributing
+
+Contributions are welcome! Please check out our [Contributing Guide](./CONTRIBUTING.md) for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE.md) file for details.
