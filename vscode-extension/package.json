@@ -55,6 +55,16 @@
         "command": "typegen.restartDaemon",
         "title": "Restart Daemon",
         "category": "Typegen"
+      },
+      {
+        "command": "typegen.showPerformance",
+        "title": "Show Performance Metrics",
+        "category": "Typegen"
+      },
+      {
+        "command": "typegen.clearCache",
+        "title": "Clear Cache",
+        "category": "Typegen"
       }
     ]
   },
