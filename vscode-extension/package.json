@@ -1,14 +1,26 @@
 {
   "name": "typegen-language",
   "displayName": "Typegen Language",
-  "description": "Support for .tgs files",
-  "icon": "./assets/logo-nobg.webp",
+  "description": "Support for .tgs files with syntax highlighting, validation, and formatting",
+  "icon": "./dist/assets/logo-nobg.webp",
   "repository": {
     "type": "git",
     "url": "https://github.com/cakeruu/typegen-editor-plugins"
   },
-  "version": "1.0.3",
+  "version": "1.1.1",
   "publisher": "cakeruu",
+  "license": "MIT",
+  "homepage": "https://github.com/cakeruu/typegen-editor-plugins#readme",
+  "bugs": {
+    "url": "https://github.com/cakeruu/typegen-editor-plugins/issues"
+  },
+  "keywords": [
+    "typegen",
+    "tgs",
+    "schema",
+    "validation",
+    "language-support"
+  ],
   "engines": {
     "vscode": "^1.93.1"
   },

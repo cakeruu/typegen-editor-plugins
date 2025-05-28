@@ -1,6 +1,4 @@
 <div align="center">
-  <img src="./assets/banner.webp" alt="Typegen Banner" width="100%" />
-
   <h1>Typegen</h1>
   <p>A powerful type generation tool that acts as a bridge between different programming languages.</p>
 
@@ -41,6 +39,10 @@ Typegen allows you to define your types once using a simple schema definition la
 
 ## Installation
 
+> **⚠️ Important Update Notice**  
+> If you have a version lower than **1.1.4**, please update to the latest version to ensure compatibility and access to the newest features
+
+
 ### CLI Tool
 ```bash
 npm install -g @cakeru/typegen
@@ -58,8 +60,7 @@ The extension provides:
 - Error detection
 - Auto-completion
 - Schema/Enum validation
-
-**Note:** The extension is currently in development and may be noticeably slow in operation. Performance improvements are planned for future updates.
+- Formatter
 
 <small><i>You can also compile the extension yourself from the source code in the <a href="https://github.com/cakeruu/typegen-editor-plugins">Typegen editor plugins repository</a>.</i></small>
 

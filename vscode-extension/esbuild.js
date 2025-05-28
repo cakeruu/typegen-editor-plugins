@@ -1,4 +1,6 @@
 const esbuild = require("esbuild");
+const fs = require("fs");
+const path = require("path");
 
 const production = process.argv.includes('--production');
 const watch = process.argv.includes('--watch');
@@ -23,6 +25,35 @@ const esbuildProblemMatcherPlugin = {
 	},
 };
 
+/**
+ * @type {import('esbuild').Plugin}
+ */
+const copyAssetsPlugin = {
+	name: 'copy-assets',
+	setup(build) {
+		build.onEnd(() => {
+			// Copy assets folder to dist
+			const assetsSource = path.join(__dirname, 'assets');
+			const assetsTarget = path.join(__dirname, 'dist', 'assets');
+			
+			if (fs.existsSync(assetsSource)) {
+				// Create dist/assets directory if it doesn't exist
+				if (!fs.existsSync(assetsTarget)) {
+					fs.mkdirSync(assetsTarget, { recursive: true });
+				}
+				
+				// Copy all files from assets to dist/assets
+				const files = fs.readdirSync(assetsSource);
+				files.forEach(file => {
+					const sourcePath = path.join(assetsSource, file);
+					const targetPath = path.join(assetsTarget, file);
+					fs.copyFileSync(sourcePath, targetPath);
+				});				
+			}
+		});
+	},
+};
+
 async function main() {
 	const ctx = await esbuild.context({
 		entryPoints: [
@@ -38,6 +69,7 @@ async function main() {
 		external: ['vscode'],
 		logLevel: 'silent',
 		plugins: [
+			copyAssetsPlugin,
 			/* add to the end of plugins array */
 			esbuildProblemMatcherPlugin,
 		],
